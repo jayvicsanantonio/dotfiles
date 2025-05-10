@@ -110,3 +110,8 @@ eval "$(fnm env --use-on-cd)"
 
 # Added by Windsurf
 export PATH="/Users/jayvicsanantonio/.codeium/windsurf/bin:$PATH"
+
+# Add aliases
+if [ -f ~/.zsh_aliases ]; then
+    . ~/.zsh_aliases
+fi
