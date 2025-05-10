@@ -1,0 +1,74 @@
+[user]
+	name = Jayvic San Antonio
+	email = codes@jayvicsanantonio.dev
+[push]
+	autoSetupRemote = true
+[init]
+	defaultBranch = main
+	templateDir = /Users/jayvicsanantonio/.git-templates/git-secrets
+[alias]
+        st = status
+        ci = commit
+        br = branch
+        co = checkout
+        df = diff
+        lg = log -p
+        lol = log --graph --decorate --pretty=oneline --abbrev-commit
+        lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
+        ls = ls-files
+        # generate comment
+        llm = "!f() { \
+            if git diff --quiet $1; then \
+                echo \"No changes to commit. Aborting.\"; \
+            else \
+                commit_msg=$(git diff $1 | llm -s \"$(cat ~/.config/prompts/commit-system-prompt.txt)\"); \
+                echo \"Commit message:\n$commit_msg\"; \
+                read -p \"Do you want to commit with this message? [y/N] \" confirm; \
+                if [[ $confirm =~ ^[Yy]$ ]]; then \
+                    git commit -m \"$commit_msg\"; \
+                else \
+                    echo \"Commit aborted.\"; \
+                fi; \
+            fi; \
+        }; f"
+
+        llm-staged = "!f() { \
+            git add -p; \
+            if ! git diff --cached --quiet; then \
+                commit_msg=$(git diff --cached | llm -s \"$(cat ~/.config/prompts/commit-system-prompt.txt)\"); \
+                echo \"Commit message:\n$commit_msg\"; \
+                read -p \"Do you want to commit with this message? [y/N] \" confirm; \
+                if [[ $confirm =~ ^[Yy]$ ]]; then \
+                    git commit -m \"$commit_msg\"; \
+                else \
+                    git reset HEAD .; \
+                    echo \"Commit aborted.\"; \
+                fi; \
+            else \
+                echo \"No changes staged for commit. Aborting.\"; \
+            fi; \
+        }; f"
+	pr = !pr.sh
+
+[color]
+        ui = true
+[color "diff"]
+        whitespace = red reverse
+[core]
+  whitespace=fix,-indent-with-non-tab,trailing-space,cr-at-eol
+[secrets]
+	providers = git secrets --aws-provider
+	patterns = (A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}
+	patterns = (\"|')?(AWS|aws|Aws)?_?(SECRET|secret|Secret)?_?(ACCESS|access|Access)?_?(KEY|key|Key)(\"|')?\\s*(:|=>|=)\\s*(\"|')?[A-Za-z0-9/\\+=]{40}(\"|')?
+	patterns = (\"|')?(AWS|aws|Aws)?_?(ACCOUNT|account|Account)_?(ID|id|Id)?(\"|')?\\s*(:|=>|=)\\s*(\"|')?[0-9]{4}\\-?[0-9]{4}\\-?[0-9]{4}(\"|')?
+	allowed = AKIAIOSFODNN7EXAMPLE
+	allowed = wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+	patterns = private_key
+	patterns = api[_]?key
+	patterns = github_token
+	patterns = access_token
+	patterns = secret_key
+	patterns = auth_token
+	patterns = GITHUB_PERSONAL_ACCESS_TOKEN
+[core]
+	excludesfile = /Users/jayvicsanantonio/.gitignore_global
